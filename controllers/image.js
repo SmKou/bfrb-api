@@ -16,12 +16,10 @@ const update = (trx, user) => {
 }
 
 const handleImage = (knex, clarifai) => (req, res) => {
-    // Check input: code, url required and required code length
     const { code, url } = req.body;
-    if (!code || !url
-        || code.length != 10)
+    if (!code || !url || code.length != 10)
     { res.status(400).json('incorrect form submission') }
-    // Setup request to clarifai
+
     const { USER_ID, PAT, APP_ID, MODEL_ID } = clarifai;
     const requestOptions = {
         method: 'POST',
@@ -37,8 +35,7 @@ const handleImage = (knex, clarifai) => (req, res) => {
           'inputs': [{ 'data': { 'image': { 'url': url }}}]
         })
     };
-    // Fetch from clarifai
-    // Update user's entries, faces, and product
+
     fetch(`https://api.clarifai.com/v2/models/${MODEL_ID}/outputs`, requestOptions)
     .then(response => response.json())
     .then(results => {
@@ -50,7 +47,7 @@ const handleImage = (knex, clarifai) => (req, res) => {
                         .then((user) => increment(trx, user, faces))
                         .then((user) => update(trx, user))
             })
-            .then( res.json(results.outputs[0].data) )
+            .then( res.json(results.outputs[0].data.regions) )
         }
         else { res.status(400).json('failed to retrieve data -2') }
     })

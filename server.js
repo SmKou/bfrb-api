@@ -24,7 +24,6 @@ const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
-const rank = require('./controllers/rank');
 
 const app = express();
 app.use(express.urlencoded({extended: false}));
@@ -36,8 +35,7 @@ app.post('/register/crypt/:code', register.missingCode(knex));
 app.post('/register/code', register.generateCode(knex));
 app.post('/register', register.handleRegister(knex, bcrypt, saltRounds));
 app.post('/signin', signin.handleSignIn(knex, bcrypt));
-app.get('/profile/:code', profile.handleProfile(knex));
+app.post('/profile/', profile.handleProfile(knex));
 app.put('/image', image.handleImage(knex, clarifai));
-app.get('/rank/:code', rank.handleRank(knex));
 
 app.listen(3000, () => console.log('app is running, port: 3000'));
